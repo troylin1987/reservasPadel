@@ -1,7 +1,7 @@
 {
   "name": "padel-reservas",
   "version": "1.0.0",
-  "homepage": "https://github.com/troylin1987/reservasPadel",
+  "homepage": "https://troylin1987.github.io/reservasPadel/",
   "private": true,
   "dependencies": {
     "@emailjs/browser": "^4.3.3",
