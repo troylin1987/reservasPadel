@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { SLOTS } from '../utils/validators';
 
@@ -16,10 +16,6 @@ const Calendar = ({ onSelectSlot }) => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  useEffect(() => {
-    fetchReservations();
-  }, [startDate, isMobile]);
 
   const getDays = () => {
     const dates = [];
@@ -47,7 +43,7 @@ const Calendar = ({ onSelectSlot }) => {
 
   const dates = getDays();
 
-  const fetchReservations = async () => {
+  const fetchReservations = useCallback(async () => {
     try {
       const result = await supabase
         .from('reservas')
@@ -63,7 +59,11 @@ const Calendar = ({ onSelectSlot }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [dates]);
+
+  useEffect(() => {
+    fetchReservations();
+  }, [fetchReservations]);
 
   const getReservationForSlot = (date, slot) => {
     return reservations.find(r => r.fecha === date && r.hora_inicio === slot);
