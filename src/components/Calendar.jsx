@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { SLOTS } from '../utils/validators';
+import { SLOTS, getEndTime } from '../utils/validators';
 
 const Calendar = ({ onSelectSlot }) => {
   const [reservations, setReservations] = useState([]);
@@ -43,27 +43,25 @@ const Calendar = ({ onSelectSlot }) => {
 
   const dates = getDays();
 
-const fetchReservations = useCallback(async () => {
-  try {
-    const result = await supabase
-      .from('reservas')
-      .select('*')
-      .eq('status', 'activa')
-      .in('fecha', dates);
+  const fetchReservations = useCallback(async () => {
+    try {
+      const result = await supabase
+        .from('reservas')
+        .select('*')
+        .eq('status', 'activa')
+        .in('fecha', dates);
 
-    if (result.error) {
-      console.error('Error fetching reservations:', result.error);
+      if (result.error) {
+        console.error('Error fetching reservations:', result.error);
+      }
+
+      setReservations(result.data || []);
+    } catch (error) {
+      console.error('Error fetching reservations:', error);
+    } finally {
+      setLoading(false);
     }
-
-    // Siempre setear las reservas, aunque sea array vacío
-    setReservations(result.data || []);
-  } catch (error) {
-    console.error('Error fetching reservations:', error);
-  } finally {
-    setLoading(false);
-  }
-}, [dates]);
-
+  }, [dates]);
 
   useEffect(() => {
     fetchReservations();
@@ -131,7 +129,10 @@ const fetchReservations = useCallback(async () => {
 
           {SLOTS.map(slot => (
             <div key={slot} className="calendar-row">
-              <div className="time-cell">{slot}</div>
+              <div className="time-cell">
+                {slot}
+                <span className="time-end">- {getEndTime(slot)}</span>
+              </div>
               {dates.map(date => {
                 const reservation = getReservationForSlot(date, slot);
                 

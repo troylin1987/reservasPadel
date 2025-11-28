@@ -328,10 +328,19 @@ body {
   font-weight: 500;
   font-size: 0.8rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   color: var(--accent);
   letter-spacing: 0.05em;
+  line-height: 1.3;
+}
+
+.time-cell .time-end {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  margin-top: 0.15rem;
 }
 
 .slot-cell {
@@ -784,6 +793,16 @@ body {
     min-height: 220px;
   }
 
+  .time-cell {
+  padding: 0.75rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.time-cell .time-end {
+  font-size: 0.65rem;
+  margin-top: 0.1rem;
+}
+
   .parallax-hero::before {
     background-attachment: scroll;
   }
@@ -981,9 +1000,14 @@ body {
   }
 
   .time-cell {
-    padding: 0.75rem 0.5rem;
-    font-size: 0.75rem;
-  }
+  padding: 0.75rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.time-cell .time-end {
+  font-size: 0.65rem;
+  margin-top: 0.1rem;
+}
 
   .slot-cell {
     min-height: 85px;
@@ -1154,9 +1178,13 @@ body {
   }
 
   .time-cell {
-    padding: 0.6rem 0.25rem;
-    font-size: 0.7rem;
-  }
+  padding: 0.6rem 0.25rem;
+  font-size: 0.7rem;
+}
+
+.time-cell .time-end {
+  font-size: 0.6rem;
+}
 
   .slot-cell {
     min-height: 75px;
