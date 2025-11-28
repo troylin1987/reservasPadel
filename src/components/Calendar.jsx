@@ -43,23 +43,27 @@ const Calendar = ({ onSelectSlot }) => {
 
   const dates = getDays();
 
-  const fetchReservations = useCallback(async () => {
-    try {
-      const result = await supabase
-        .from('reservas')
-        .select('*')
-        .eq('status', 'activa')
-        .in('fecha', dates);
+const fetchReservations = useCallback(async () => {
+  try {
+    const result = await supabase
+      .from('reservas')
+      .select('*')
+      .eq('status', 'activa')
+      .in('fecha', dates);
 
-      if (result.error) throw result.error;
-      setReservations(result.data || []);
-    } catch (error) {
-      console.error('Error fetching reservations:', error);
-      alert('Error al cargar las reservas');
-    } finally {
-      setLoading(false);
+    if (result.error) {
+      console.error('Error fetching reservations:', result.error);
     }
-  }, [dates]);
+
+    // Siempre setear las reservas, aunque sea array vacío
+    setReservations(result.data || []);
+  } catch (error) {
+    console.error('Error fetching reservations:', error);
+  } finally {
+    setLoading(false);
+  }
+}, [dates]);
+
 
   useEffect(() => {
     fetchReservations();
