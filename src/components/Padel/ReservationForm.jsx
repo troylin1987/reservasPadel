@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { supabase } from '../lib/supabaseClient';
 import emailjs from '@emailjs/browser';
-import { PORTALES, PISOS, LETRAS, generateCancelCode, isDateValid, getEndTime } from '../utils/validators';
+import { supabase } from '../../lib/supabaseClient';  // Cambiado de '../lib' a '../../lib'
+import { PORTALES, PISOS, LETRAS, generateCancelCode, isDateValid, getEndTime } from '../../utils/validators';  // Cambiado también
+
+
 
 const ReservationForm = ({ selectedDate, selectedSlot, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({

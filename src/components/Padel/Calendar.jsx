@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabaseClient';
-import { SLOTS, getEndTime } from '../utils/validators';
+import { supabase } from '../../lib/supabaseClient';  // Cambiado de '../lib' a '../../lib'
+import { SLOTS, getEndTime } from '../../utils/validators';  // Cambiado también
+
 
 const Calendar = ({ onSelectSlot }) => {
   const [reservations, setReservations] = useState([]);
