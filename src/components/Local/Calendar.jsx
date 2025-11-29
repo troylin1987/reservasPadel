@@ -155,6 +155,11 @@ const Calendar = ({ onSelectDate }) => {
                       <div className="reserved-location">
                         Portal {reservation.portal} · {reservation.piso}{reservation.letra}
                       </div>
+                      {reservation.motivo && (
+                        <div className="reserved-motivo">
+                          "{reservation.motivo}"
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

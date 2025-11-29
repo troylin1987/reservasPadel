@@ -801,6 +801,17 @@ body {
   letter-spacing: 0.05em;
 }
 
+.reserved-motivo {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--carbon-gray-80);
+  line-height: 1.4;
+}
+
+
 /* Reservations List */
 .reservations-list {
   display: flex;
