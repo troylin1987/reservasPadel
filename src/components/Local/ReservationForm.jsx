@@ -56,61 +56,103 @@ const ReservationForm = ({ selectedDate, onSuccess, onCancel }) => {
   };
 
   const checkExistingReservations = async () => {
-    const { portal, piso, letra } = formData;
+  const { portal, piso, letra } = formData;
+  
+  try {
+    const selectedDateObj = new Date(selectedDate + 'T12:00:00');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     
-    try {
-      const selectedDateObj = new Date(selectedDate + 'T12:00:00');
-      const currentMonth = selectedDateObj.getMonth();
-      const currentYear = selectedDateObj.getFullYear();
-      
-      const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-      const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
-      
-      const firstDayStr = firstDayOfMonth.toISOString().split('T')[0];
-      const lastDayStr = lastDayOfMonth.toISOString().split('T')[0];
-      
-      const result = await supabase
-        .from('reservas_local')
-        .select('*')
-        .eq('status', 'activa')
-        .gte('fecha', firstDayStr)
-        .lte('fecha', lastDayStr);
-      
-      if (result.error) {
-        console.error('Error fetching reservations:', result.error);
-        throw new Error('Error al verificar las reservas. Por favor, inténtalo de nuevo.');
-      }
-
-      const allReservations = result.data || [];
-
-      // Verificar que el usuario no tenga ya una reserva este mes
-      const userReservation = allReservations.find(r => 
-        r.portal === parseInt(portal) &&
-        r.piso.toString() === piso.toString() &&
-        r.letra.toUpperCase() === letra.toUpperCase()
-      );
-
-      if (userReservation) {
-        const reservedDate = new Date(userReservation.fecha + 'T12:00:00').toLocaleDateString('es-ES', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        });
-        throw new Error(`Ya tienes una reserva este mes (${reservedDate}). Solo se permite una reserva al mes por vivienda.`);
-      }
-
-      // Verificar que el día específico no esté ocupado
-      const dayOccupied = allReservations.find(r => r.fecha === selectedDate);
-
-      if (dayOccupied) {
-        throw new Error('Este día ya ha sido reservado por otro vecino. Por favor, selecciona otra fecha.');
-      }
-
-      return true;
-    } catch (error) {
-      throw error;
+    // Validar que no sea hoy
+    if (selectedDateObj.getTime() === today.getTime()) {
+      throw new Error('No se puede reservar para el día de hoy. Las reservas deben hacerse con al menos un día de antelación.');
     }
-  };
+    
+    // Validar que no sea más de 30 días en el futuro
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 30);
+    
+    if (selectedDateObj > maxDate) {
+      throw new Error('No se puede reservar con más de 30 días de antelación.');
+    }
+    
+    // Validar que sea al menos mañana
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    if (selectedDateObj < tomorrow) {
+      throw new Error('La reserva debe ser para mañana o días posteriores.');
+    }
+    
+    // Obtener todas las reservas activas del usuario (últimos 90 días y próximos 90 días)
+    const startRange = new Date(today);
+    startRange.setDate(startRange.getDate() - 90);
+    
+    const endRange = new Date(today);
+    endRange.setDate(endRange.getDate() + 90);
+    
+    const result = await supabase
+      .from('reservas_local')
+      .select('*')
+      .eq('status', 'activa')
+      .eq('portal', parseInt(portal))
+      .eq('piso', piso.toString())
+      .eq('letra', letra.toUpperCase())
+      .gte('fecha', startRange.toISOString().split('T')[0])
+      .lte('fecha', endRange.toISOString().split('T')[0]);
+    
+    if (result.error) {
+      console.error('Error fetching reservations:', result.error);
+      throw new Error('Error al verificar las reservas. Por favor, inténtalo de nuevo.');
+    }
+
+    const userReservations = result.data || [];
+
+    // Verificar que no tenga reserva en los últimos 30 días o próximos 30 días
+    const minDate = new Date(selectedDateObj);
+    minDate.setDate(minDate.getDate() - 30);
+    
+    const maxDateForCheck = new Date(selectedDateObj);
+    maxDateForCheck.setDate(maxDateForCheck.getDate() + 30);
+
+    const conflictingReservation = userReservations.find(r => {
+      const resDate = new Date(r.fecha + 'T12:00:00');
+      return resDate >= minDate && resDate <= maxDateForCheck && r.fecha !== selectedDate;
+    });
+
+    if (conflictingReservation) {
+      const conflictDate = new Date(conflictingReservation.fecha + 'T12:00:00').toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      });
+      throw new Error(`No puedes reservar porque tienes otra reserva el ${conflictDate}. Debe haber al menos 30 días entre reservas.`);
+    }
+
+    // Verificar que el día específico no esté ocupado por otra persona
+    const dayOccupiedResult = await supabase
+      .from('reservas_local')
+      .select('*')
+      .eq('status', 'activa')
+      .eq('fecha', selectedDate);
+
+    if (dayOccupiedResult.error) {
+      console.error('Error checking day:', dayOccupiedResult.error);
+      throw new Error('Error al verificar la disponibilidad del día.');
+    }
+
+    const dayOccupied = dayOccupiedResult.data?.[0];
+
+    if (dayOccupied) {
+      throw new Error('Este día ya ha sido reservado por otro vecino. Por favor, selecciona otra fecha.');
+    }
+
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
   const sendConfirmationEmail = async (cancelCode) => {
     const cancelUrl = `${window.location.origin}${process.env.PUBLIC_URL}/#/cancelar?codigo=${cancelCode}`;

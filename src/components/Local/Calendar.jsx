@@ -4,18 +4,7 @@ import { supabase } from '../../lib/supabaseClient';
 const Calendar = ({ onSelectDate }) => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-
-  const getDaysInMonth = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
-    
-    return { daysInMonth, startingDayOfWeek, year, month };
-  };
+  const [availableDates, setAvailableDates] = useState([]);
 
   const formatDate = (date) => {
     const d = new Date(date);
@@ -25,134 +14,178 @@ const Calendar = ({ onSelectDate }) => {
     return `${year}-${month}-${day}`;
   };
 
+  const getNext30Days = () => {
+    const dates = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Solo fechas desde mañana hasta 30 días después
+    for (let i = 1; i <= 30; i++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() + i);
+      dates.push({
+        dateStr: formatDate(date),
+        dateObj: date
+      });
+    }
+    return dates;
+  };
+
   const fetchReservations = useCallback(async () => {
     try {
-      const { year, month } = getDaysInMonth(currentMonth);
-      const firstDay = formatDate(new Date(year, month, 1));
-      const lastDay = formatDate(new Date(year, month + 1, 0));
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Obtener reservas desde hace 60 días hasta dentro de 60 días
+      const startDate = new Date(today);
+      startDate.setDate(startDate.getDate() - 60);
+      
+      const endDate = new Date(today);
+      endDate.setDate(endDate.getDate() + 60);
 
       const result = await supabase
         .from('reservas_local')
         .select('*')
         .eq('status', 'activa')
-        .gte('fecha', firstDay)
-        .lte('fecha', lastDay);
+        .gte('fecha', formatDate(startDate))
+        .lte('fecha', formatDate(endDate))
+        .order('fecha', { ascending: true });
 
       if (result.error) {
         console.error('Error fetching reservations:', result.error);
       }
 
       setReservations(result.data || []);
+      
+      // Calcular fechas disponibles
+      const next30 = getNext30Days();
+      const reserved = (result.data || []).map(r => r.fecha);
+      
+      const available = next30.filter(({ dateStr }) => !reserved.includes(dateStr));
+      setAvailableDates(available);
+
     } catch (error) {
       console.error('Error fetching reservations:', error);
     } finally {
       setLoading(false);
     }
-  }, [currentMonth]);
+  }, []);
 
   useEffect(() => {
     fetchReservations();
   }, [fetchReservations]);
 
-  const getReservationForDate = (date) => {
-    return reservations.find(r => r.fecha === date);
+  const getDayName = (dateStr) => {
+    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const date = new Date(dateStr + 'T12:00:00');
+    return days[date.getDay()];
   };
 
-  const goToPreviousMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+  const getFormattedDate = (dateStr) => {
+    const date = new Date(dateStr + 'T12:00:00');
+    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    return `${date.getDate()} de ${months[date.getMonth()]} de ${date.getFullYear()}`;
   };
 
-  const goToNextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+  const getReservationForDate = (dateStr) => {
+    return reservations.find(r => r.fecha === dateStr);
   };
 
-  const goToCurrentMonth = () => {
-    setCurrentMonth(new Date());
-  };
+  if (loading) return <div className="loading">Cargando disponibilidad</div>;
 
-  const isDateInPast = (year, month, day) => {
-    const dateToCheck = new Date(year, month, day);
+  const upcomingReservations = reservations.filter(r => {
+    const resDate = new Date(r.fecha + 'T12:00:00');
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return dateToCheck < today;
-  };
-
-  if (loading) return <div className="loading">Cargando calendario</div>;
-
-  const { daysInMonth, startingDayOfWeek, year, month } = getDaysInMonth(currentMonth);
-  const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-
-  const days = [];
-  for (let i = 0; i < startingDayOfWeek; i++) {
-    days.push(null);
-  }
-  for (let day = 1; day <= daysInMonth; day++) {
-    days.push(day);
-  }
+    return resDate >= today;
+  });
 
   return (
-    <div className="calendar-container">
-      <div className="calendar-header-section">
-        <h2>Disponibilidad del Local - {monthNames[month]} {year}</h2>
-        <div className="calendar-controls">
-          <button onClick={goToPreviousMonth}>← Anterior</button>
-          <button onClick={goToCurrentMonth}>Hoy</button>
-          <button onClick={goToNextMonth}>Siguiente →</button>
-        </div>
-      </div>
-
-      <div className="local-calendar-grid">
-        <div className="local-calendar-header">
-          {dayNames.map(day => (
-            <div key={day} className="local-day-name">{day}</div>
-          ))}
+    <div className="local-calendar-list">
+      {/* Available Dates Section */}
+      <div className="calendar-section">
+        <div className="section-header available-header">
+          <h3>📅 Fechas Disponibles ({availableDates.length})</h3>
+          <p className="section-subtitle">Próximos 30 días disponibles para reservar</p>
         </div>
 
-        <div className="local-calendar-days">
-          {days.map((day, index) => {
-            if (day === null) {
-              return <div key={`empty-${index}`} className="local-day-cell empty"></div>;
-            }
-
-            const dateStr = formatDate(new Date(year, month, day));
-            const reservation = getReservationForDate(dateStr);
-            const isPast = isDateInPast(year, month, day);
-            const isToday = new Date().toDateString() === new Date(year, month, day).toDateString();
-
-            return (
+        {availableDates.length === 0 ? (
+          <div className="empty-state">
+            <span className="empty-icon">📆</span>
+            <p>No hay fechas disponibles en los próximos 30 días</p>
+          </div>
+        ) : (
+          <div className="dates-grid">
+            {availableDates.map(({ dateStr, dateObj }) => (
               <div
-                key={day}
-                className={`local-day-cell ${reservation ? 'occupied' : 'available'} ${isPast ? 'past' : ''} ${isToday ? 'today' : ''}`}
-                onClick={() => !reservation && !isPast && onSelectDate(dateStr)}
+                key={dateStr}
+                className="date-card available"
+                onClick={() => onSelectDate(dateStr)}
               >
-                <div className="day-number">{day}</div>
-                {reservation ? (
-                  <div className="local-reservation-info">
-                    <div className="name">{reservation.nombre} {reservation.apellidos}</div>
-                    <div className="location">P{reservation.portal} · {reservation.piso}{reservation.letra}</div>
-                  </div>
-                ) : !isPast ? (
-                  <div className="available-label">Disponible</div>
-                ) : null}
+                <div className="date-card-header">
+                  <div className="day-number">{dateObj.getDate()}</div>
+                  <div className="status-badge available">Disponible</div>
+                </div>
+                <div className="date-card-body">
+                  <div className="day-name">{getDayName(dateStr)}</div>
+                  <div className="date-full">{getFormattedDate(dateStr)}</div>
+                </div>
+                <div className="date-card-footer">
+                  <button className="btn-reserve">Reservar →</button>
+                </div>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      <div className="local-calendar-legend">
-        <div className="legend-item">
-          <span className="legend-color available"></span>
-          <span>Disponible</span>
+      {/* Upcoming Reservations Section */}
+      {upcomingReservations.length > 0 && (
+        <div className="calendar-section">
+          <div className="section-header reserved-header">
+            <h3>🔒 Próximas Reservas ({upcomingReservations.length})</h3>
+            <p className="section-subtitle">Fechas ya reservadas</p>
+          </div>
+
+          <div className="reservations-list">
+            {upcomingReservations.map((reservation) => (
+              <div key={reservation.id} className="reservation-card">
+                <div className="reservation-date-block">
+                  <div className="res-day-number">
+                    {new Date(reservation.fecha + 'T12:00:00').getDate()}
+                  </div>
+                  <div className="res-month">
+                    {new Date(reservation.fecha + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}
+                  </div>
+                </div>
+                <div className="reservation-details">
+                  <div className="res-day-name">{getDayName(reservation.fecha)}</div>
+                  <div className="res-full-date">{getFormattedDate(reservation.fecha)}</div>
+                  <div className="res-user">
+                    <strong>{reservation.nombre} {reservation.apellidos}</strong>
+                    <span className="res-location">Portal {reservation.portal} · {reservation.piso}{reservation.letra}</span>
+                  </div>
+                  {reservation.motivo && (
+                    <div className="res-motivo">"{reservation.motivo}"</div>
+                  )}
+                </div>
+                <div className="status-badge reserved">Reservado</div>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="legend-item">
-          <span className="legend-color occupied"></span>
-          <span>Reservado</span>
-        </div>
-        <div className="legend-item">
-          <span className="legend-color past"></span>
-          <span>No disponible</span>
+      )}
+
+      {/* Info Section */}
+      <div className="calendar-info">
+        <div className="info-box">
+          <strong>ℹ️ Información importante:</strong>
+          <ul>
+            <li>Solo puedes reservar <strong>desde mañana hasta 30 días</strong> en adelante</li>
+            <li>Máximo <strong>1 reserva al mes</strong> por vivienda</li>
+            <li>No se permite reservar <strong>30 días antes o después</strong> de tu última reserva</li>
+            <li>Horario del local: <strong>10:00 a 22:00</strong></li>
+          </ul>
         </div>
       </div>
     </div>
