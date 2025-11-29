@@ -359,6 +359,13 @@ body {
   color: var(--carbon-black);
 }
 
+/* Header Buttons */
+.header-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 /* Padel Info Section */
 .padel-info {
   padding: 0 1rem;
@@ -367,7 +374,6 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
-
 
 /* Calendar Container */
 .calendar-container {
@@ -821,7 +827,6 @@ body {
   line-height: 1.4;
 }
 
-
 /* Reservations List */
 .reservations-list {
   display: flex;
@@ -970,6 +975,216 @@ body {
   font-size: 1.1rem;
 }
 
+/* Historico Styles */
+.historico-container {
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-subtle);
+  padding: 0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.historico-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--primary-bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.historico-header h2 {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.historico-controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.historico-controls button {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  padding: 0.625rem 1rem;
+  font-size: 0.75rem;
+  font-family: 'IBM Plex Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.historico-controls button:hover:not(:disabled) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--carbon-black);
+}
+
+.historico-controls button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.historico-month-title {
+  padding: 1.5rem;
+  background: var(--surface-bg);
+  border-bottom: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--accent);
+}
+
+.historico-month-title h3 {
+  font-size: 1.75rem;
+  font-weight: 300;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.historico-count {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.historico-list {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.historico-item {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--accent);
+  padding: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.historico-item:hover {
+  background: var(--carbon-gray-70);
+  border-left-width: 4px;
+}
+
+.historico-item.cancelada {
+  border-left-color: var(--carbon-gray-60);
+  opacity: 0.7;
+}
+
+.historico-date {
+  flex-shrink: 0;
+  width: 70px;
+  text-align: center;
+  padding: 0.75rem;
+  background: var(--primary-bg);
+  border: 1px solid var(--border-strong);
+}
+
+.historico-day {
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.historico-item.cancelada .historico-day {
+  color: var(--carbon-gray-60);
+}
+
+.historico-month {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+  letter-spacing: 0.05em;
+}
+
+.historico-year {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-top: 0.15rem;
+}
+
+.historico-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.historico-time {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.historico-time strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.historico-item.cancelada .historico-time strong {
+  color: var(--carbon-gray-60);
+}
+
+.historico-user {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.historico-user strong {
+  font-weight: 600;
+}
+
+.historico-location {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.historico-motivo {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-subtle);
+  line-height: 1.4;
+}
+
+.historico-status {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 2px;
+}
+
+.historico-status.activa {
+  background: var(--accent);
+  color: var(--carbon-black);
+}
+
+.historico-status.cancelada {
+  background: var(--carbon-gray-70);
+  color: var(--carbon-gray-30);
+}
 
 /* Modal */
 .modal-overlay {
@@ -1393,6 +1608,16 @@ body {
     font-size: 1.5rem;
   }
 
+  /* Header buttons mobile */
+  .header-buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .header-buttons .btn-normativa {
+    width: 100%;
+  }
+
   /* Calendar mobile */
   .calendar-container {
     border-left: none;
@@ -1526,6 +1751,66 @@ body {
   .reservations-list,
   .calendar-info {
     padding: 0 0.5rem;
+  }
+
+  /* Historico mobile */
+  .historico-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .historico-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .historico-controls {
+    width: 100%;
+  }
+
+  .historico-controls button {
+    flex: 1;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.7rem;
+  }
+
+  .historico-month-title h3 {
+    font-size: 1.5rem;
+  }
+
+  .historico-list {
+    padding: 1rem;
+  }
+
+  .historico-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .historico-date {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .historico-day {
+    font-size: 1.75rem;
+  }
+
+  .historico-month,
+  .historico-year {
+    display: inline;
+    margin-left: 0.5rem;
+  }
+
+  .historico-details {
+    width: 100%;
+  }
+
+  .historico-status {
+    width: 100%;
+    text-align: center;
   }
 
   /* Form mobile improvements */

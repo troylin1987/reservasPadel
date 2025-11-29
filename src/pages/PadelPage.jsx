@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import Calendar from '../components/Padel/Calendar';
 import ReservationForm from '../components/Padel/ReservationForm';
 import Normativa from '../components/Padel/Normativa';
+import Historico from '../components/Padel/Historico';
 
 const PadelPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedSlot, setSelectedSlot] = useState('');
   const [showNormativa, setShowNormativa] = useState(false);
+  const [showHistorico, setShowHistorico] = useState(false);
 
   const handleSelectSlot = (date, slot) => {
     setSelectedDate(date);
@@ -35,11 +37,25 @@ const PadelPage = () => {
     );
   }
 
+  if (showHistorico) {
+    return (
+      <div>
+        <div className="page-header">
+          <button onClick={() => setShowHistorico(false)} className="btn-back">← Volver al calendario</button>
+        </div>
+        <Historico />
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="page-header">
         <h1>Reservas de Pádel</h1>
-        <button onClick={() => setShowNormativa(true)} className="btn-normativa">Ver Normativa</button>
+        <div className="header-buttons">
+          <button onClick={() => setShowHistorico(true)} className="btn-normativa">Ver Histórico</button>
+          <button onClick={() => setShowNormativa(true)} className="btn-normativa">Ver Normativa</button>
+        </div>
       </div>
 
       {/* Info Section */}
