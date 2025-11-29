@@ -153,6 +153,7 @@ const ReservationForm = ({ selectedDate, selectedSlot, onSuccess, onCancel }) =>
       to_email: formData.correo,
       to_name: `${formData.nombre} ${formData.apellidos}`,
       fecha: selectedDate,
+      tipo_reserva: 'Pista de Pádel',
       hora: selectedSlot,
       portal: formData.portal,
       piso: formData.piso,
