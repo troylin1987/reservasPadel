@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 
 const Calendar = ({ onSelectDate }) => {
-  const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [allDates, setAllDates] = useState([]);
 
@@ -53,7 +52,6 @@ const Calendar = ({ onSelectDate }) => {
       }
 
       const reservationsData = result.data || [];
-      setReservations(reservationsData);
       
       // Obtener todos los próximos 30 días
       const next30 = getNext30Days();
