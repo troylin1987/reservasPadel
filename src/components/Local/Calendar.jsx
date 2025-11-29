@@ -98,6 +98,19 @@ const Calendar = ({ onSelectDate }) => {
 
   return (
     <div className="local-calendar-list">
+      {/* Info Section - MOVIDA AL PRINCIPIO */}
+      <div className="calendar-info">
+        <div className="info-box">
+          <strong>ℹ️ Información importante:</strong>
+          <ul>
+            <li>Cada vivienda solo puede hacer <strong>una reserva al mes</strong></li>
+            <li>Las reservas solo pueden hacerse con un <strong>máximo de 30 días de antelación</strong></li>
+            <li>No se puede <strong>reservar en el mismo día</strong></li>
+            <li>El horario del local es de <strong>10:00 a 22:00</strong></li>
+          </ul>
+        </div>
+      </div>
+
       {/* Available Dates Section */}
       <div className="calendar-section">
         <div className="section-header available-header">
@@ -171,19 +184,6 @@ const Calendar = ({ onSelectDate }) => {
           </div>
         </div>
       )}
-
-      {/* Info Section */}
-      <div className="calendar-info">
-        <div className="info-box">
-          <strong>ℹ️ Información importante:</strong>
-          <ul>
-            <li>Solo puedes reservar <strong>desde mañana hasta 30 días</strong> en adelante</li>
-            <li>Máximo <strong>1 reserva al mes</strong> por vivienda</li>
-            <li>No se permite reservar <strong>30 días antes o después</strong> de tu última reserva</li>
-            <li>Horario del local: <strong>10:00 a 22:00</strong></li>
-          </ul>
-        </div>
-      </div>
     </div>
   );
 };

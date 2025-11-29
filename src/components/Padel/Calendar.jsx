@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../../lib/supabaseClient';  // Cambiado de '../lib' a '../../lib'
-import { SLOTS, getEndTime } from '../../utils/validators';  // Cambiado también
-
+import { supabase } from '../../lib/supabaseClient';
+import { SLOTS, getEndTime } from '../../utils/validators';
 
 const Calendar = ({ onSelectSlot }) => {
   const [reservations, setReservations] = useState([]);
@@ -23,12 +22,22 @@ const Calendar = ({ onSelectSlot }) => {
     const start = new Date(startDate);
     start.setHours(0, 0, 0, 0);
     
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 7);
+    
     const daysToShow = isMobile ? 3 : 7;
     
     for (let i = 0; i < daysToShow; i++) {
       const date = new Date(start);
       date.setDate(date.getDate() + i);
-      dates.push(formatDate(date));
+      
+      // Solo añadir si está dentro del rango permitido (hoy hasta +7 días)
+      if (date <= maxDate && date >= today) {
+        dates.push(formatDate(date));
+      }
     }
     
     return dates;
@@ -88,6 +97,15 @@ const Calendar = ({ onSelectSlot }) => {
     const newDate = new Date(startDate);
     const daysToMove = isMobile ? 3 : 7;
     newDate.setDate(newDate.getDate() - daysToMove);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // No permitir ir antes de hoy
+    if (newDate < today) {
+      newDate.setTime(today.getTime());
+    }
+    
     setStartDate(newDate);
   };
 
@@ -95,11 +113,53 @@ const Calendar = ({ onSelectSlot }) => {
     const newDate = new Date(startDate);
     const daysToMove = isMobile ? 3 : 7;
     newDate.setDate(newDate.getDate() + daysToMove);
-    setStartDate(newDate);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 7);
+    
+    // No permitir ir más allá de +7 días desde el día actual
+    const lastDayOfNewRange = new Date(newDate);
+    lastDayOfNewRange.setDate(lastDayOfNewRange.getDate() + daysToMove - 1);
+    
+    if (lastDayOfNewRange > maxDate) {
+      // Ajustar para que el último día mostrado sea exactamente maxDate
+      const adjustedDate = new Date(maxDate);
+      adjustedDate.setDate(adjustedDate.getDate() - (daysToMove - 1));
+      setStartDate(adjustedDate);
+    } else {
+      setStartDate(newDate);
+    }
   };
 
   const goToToday = () => {
     setStartDate(new Date());
+  };
+
+  const canGoNext = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 7);
+    
+    const daysToMove = isMobile ? 3 : 7;
+    const lastCurrentDay = new Date(startDate);
+    lastCurrentDay.setDate(lastCurrentDay.getDate() + daysToMove - 1);
+    
+    return lastCurrentDay < maxDate;
+  };
+
+  const canGoPrevious = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const firstCurrentDay = new Date(startDate);
+    firstCurrentDay.setHours(0, 0, 0, 0);
+    
+    return firstCurrentDay > today;
   };
 
   if (loading) return <div className="loading">Cargando calendario</div>;
@@ -109,9 +169,9 @@ const Calendar = ({ onSelectSlot }) => {
       <div className="calendar-header-section">
         <h2>Disponibilidad de Pista</h2>
         <div className="calendar-controls">
-          <button onClick={goToPrevious}>← Anterior</button>
+          <button onClick={goToPrevious} disabled={!canGoPrevious()}>← Anterior</button>
           <button onClick={goToToday}>Hoy</button>
-          <button onClick={goToNext}>Siguiente →</button>
+          <button onClick={goToNext} disabled={!canGoNext()}>Siguiente →</button>
         </div>
       </div>
 
