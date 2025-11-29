@@ -359,6 +359,16 @@ body {
   color: var(--carbon-black);
 }
 
+/* Padel Info Section */
+.padel-info {
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
 /* Calendar Container */
 .calendar-container {
   background: var(--secondary-bg);
