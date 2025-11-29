@@ -14,7 +14,7 @@ const Calendar = ({ onSelectDate }) => {
     return `${year}-${month}-${day}`;
   };
 
-  const getNext30Days = () => {
+  const getNext30Days = useCallback(() => {
     const dates = [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -29,7 +29,7 @@ const Calendar = ({ onSelectDate }) => {
       });
     }
     return dates;
-  };
+  }, []);
 
   const fetchReservations = useCallback(async () => {
     try {
@@ -69,7 +69,7 @@ const Calendar = ({ onSelectDate }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [getNext30Days]);
 
   useEffect(() => {
     fetchReservations();
@@ -85,10 +85,6 @@ const Calendar = ({ onSelectDate }) => {
     const date = new Date(dateStr + 'T12:00:00');
     const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     return `${date.getDate()} de ${months[date.getMonth()]} de ${date.getFullYear()}`;
-  };
-
-  const getReservationForDate = (dateStr) => {
-    return reservations.find(r => r.fecha === dateStr);
   };
 
   if (loading) return <div className="loading">Cargando disponibilidad</div>;
