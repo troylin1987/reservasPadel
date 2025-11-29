@@ -19,7 +19,7 @@ function App() {
           <header className="app-header">
             <div className="header-content">
               <h1 className="app-title">
-                <strong>Gardenias 2</strong> — Reservas
+                <strong>Gardenias 2</strong> — Fuenlabrada
               </h1>
               <p className="app-subtitle">Sistema de Gestión Comunitaria</p>
               <nav>
