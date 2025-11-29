@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/reservasPadel/static/css/main.43eaf5de.css",
-    "main.js": "/reservasPadel/static/js/main.26068084.js",
+    "main.js": "/reservasPadel/static/js/main.3e94cac5.js",
     "index.html": "/reservasPadel/index.html",
     "main.43eaf5de.css.map": "/reservasPadel/static/css/main.43eaf5de.css.map",
-    "main.26068084.js.map": "/reservasPadel/static/js/main.26068084.js.map"
+    "main.3e94cac5.js.map": "/reservasPadel/static/js/main.3e94cac5.js.map"
   },
   "entrypoints": [
     "static/css/main.43eaf5de.css",
-    "static/js/main.26068084.js"
+    "static/js/main.3e94cac5.js"
   ]
 }
