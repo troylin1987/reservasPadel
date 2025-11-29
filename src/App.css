@@ -611,6 +611,7 @@ body {
 
 .calendar-section {
   margin-bottom: 3rem;
+  margin-top: 2rem;
 }
 
 .section-header {
@@ -681,6 +682,16 @@ body {
   transform: scaleY(1);
 }
 
+.date-card.reserved {
+  background: var(--carbon-gray-90);
+  border-color: var(--carbon-gray-70);
+  opacity: 0.9;
+}
+
+.date-card.reserved::before {
+  background: var(--carbon-gray-60);
+}
+
 .date-card-header {
   display: flex;
   justify-content: space-between;
@@ -693,6 +704,11 @@ body {
   font-weight: 300;
   line-height: 1;
   color: var(--accent);
+  transition: color 0.3s;
+}
+
+.day-number.reserved-number {
+  color: var(--carbon-gray-50);
 }
 
 .status-badge {
@@ -711,7 +727,7 @@ body {
 
 .status-badge.reserved {
   background: var(--carbon-gray-70);
-  color: var(--text-secondary);
+  color: var(--carbon-gray-30);
 }
 
 .date-card-body {
@@ -727,6 +743,10 @@ body {
   letter-spacing: normal;
 }
 
+.date-card.reserved .day-name {
+  color: var(--text-secondary);
+}
+
 .date-full {
   font-size: 0.875rem;
   color: var(--text-secondary);
@@ -735,6 +755,11 @@ body {
 .date-card-footer {
   border-top: 1px solid var(--border-subtle);
   padding-top: 1rem;
+  min-height: 60px;
+}
+
+.date-card.reserved .date-card-footer {
+  border-top-color: var(--carbon-gray-80);
 }
 
 .btn-reserve {
@@ -755,6 +780,25 @@ body {
 .btn-reserve:hover {
   background: var(--accent);
   color: var(--carbon-black);
+}
+
+.reserved-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reserved-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.reserved-location {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* Reservations List */
@@ -849,6 +893,7 @@ body {
 /* Info Box */
 .calendar-info {
   padding: 0 1rem;
+  margin-bottom: 2rem;
 }
 
 .info-box {
@@ -903,6 +948,7 @@ body {
 .empty-state p {
   font-size: 1.1rem;
 }
+
 
 /* Modal */
 .modal-overlay {

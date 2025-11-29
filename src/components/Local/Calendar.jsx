@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabaseClient';
 const Calendar = ({ onSelectDate }) => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [availableDates, setAvailableDates] = useState([]);
+  const [allDates, setAllDates] = useState([]);
 
   const formatDate = (date) => {
     const d = new Date(date);
@@ -19,7 +19,7 @@ const Calendar = ({ onSelectDate }) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Solo fechas desde mañana hasta 30 días después
+    // Todos los días desde mañana hasta 30 días después
     for (let i = 1; i <= 30; i++) {
       const date = new Date(today);
       date.setDate(date.getDate() + i);
@@ -36,10 +36,7 @@ const Calendar = ({ onSelectDate }) => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      // Obtener reservas desde hace 60 días hasta dentro de 60 días
-      const startDate = new Date(today);
-      startDate.setDate(startDate.getDate() - 60);
-      
+      // Obtener reservas desde hoy hasta dentro de 60 días
       const endDate = new Date(today);
       endDate.setDate(endDate.getDate() + 60);
 
@@ -47,7 +44,7 @@ const Calendar = ({ onSelectDate }) => {
         .from('reservas_local')
         .select('*')
         .eq('status', 'activa')
-        .gte('fecha', formatDate(startDate))
+        .gte('fecha', formatDate(today))
         .lte('fecha', formatDate(endDate))
         .order('fecha', { ascending: true });
 
@@ -55,14 +52,24 @@ const Calendar = ({ onSelectDate }) => {
         console.error('Error fetching reservations:', result.error);
       }
 
-      setReservations(result.data || []);
+      const reservationsData = result.data || [];
+      setReservations(reservationsData);
       
-      // Calcular fechas disponibles
+      // Obtener todos los próximos 30 días
       const next30 = getNext30Days();
-      const reserved = (result.data || []).map(r => r.fecha);
       
-      const available = next30.filter(({ dateStr }) => !reserved.includes(dateStr));
-      setAvailableDates(available);
+      // Mapear cada fecha con su reserva (si existe)
+      const datesWithReservations = next30.map(({ dateStr, dateObj }) => {
+        const reservation = reservationsData.find(r => r.fecha === dateStr);
+        return {
+          dateStr,
+          dateObj,
+          reservation: reservation || null,
+          isAvailable: !reservation
+        };
+      });
+      
+      setAllDates(datesWithReservations);
 
     } catch (error) {
       console.error('Error fetching reservations:', error);
@@ -89,16 +96,11 @@ const Calendar = ({ onSelectDate }) => {
 
   if (loading) return <div className="loading">Cargando disponibilidad</div>;
 
-  const upcomingReservations = reservations.filter(r => {
-    const resDate = new Date(r.fecha + 'T12:00:00');
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return resDate >= today;
-  });
+  const availableCount = allDates.filter(d => d.isAvailable).length;
 
   return (
     <div className="local-calendar-list">
-      {/* Info Section - MOVIDA AL PRINCIPIO */}
+      {/* Info Section */}
       <div className="calendar-info">
         <div className="info-box">
           <strong>ℹ️ Información importante:</strong>
@@ -114,76 +116,55 @@ const Calendar = ({ onSelectDate }) => {
       {/* Available Dates Section */}
       <div className="calendar-section">
         <div className="section-header available-header">
-          <h3>📅 Fechas Disponibles ({availableDates.length})</h3>
-          <p className="section-subtitle">Próximos 30 días disponibles para reservar</p>
+          <h3>📅 Fechas Disponibles ({availableCount})</h3>
+          <p className="section-subtitle">Mostrando los próximos 30 días</p>
         </div>
 
-        {availableDates.length === 0 ? (
+        {allDates.length === 0 ? (
           <div className="empty-state">
             <span className="empty-icon">📆</span>
-            <p>No hay fechas disponibles en los próximos 30 días</p>
+            <p>No hay fechas disponibles</p>
           </div>
         ) : (
           <div className="dates-grid">
-            {availableDates.map(({ dateStr, dateObj }) => (
+            {allDates.map(({ dateStr, dateObj, reservation, isAvailable }) => (
               <div
                 key={dateStr}
-                className="date-card available"
-                onClick={() => onSelectDate(dateStr)}
+                className={`date-card ${isAvailable ? 'available' : 'reserved'}`}
+                onClick={() => isAvailable && onSelectDate(dateStr)}
+                style={{ cursor: isAvailable ? 'pointer' : 'default' }}
               >
                 <div className="date-card-header">
-                  <div className="day-number">{dateObj.getDate()}</div>
-                  <div className="status-badge available">Disponible</div>
+                  <div className={`day-number ${!isAvailable ? 'reserved-number' : ''}`}>
+                    {dateObj.getDate()}
+                  </div>
+                  <div className={`status-badge ${isAvailable ? 'available' : 'reserved'}`}>
+                    {isAvailable ? 'Disponible' : 'Reservado'}
+                  </div>
                 </div>
                 <div className="date-card-body">
                   <div className="day-name">{getDayName(dateStr)}</div>
                   <div className="date-full">{getFormattedDate(dateStr)}</div>
                 </div>
                 <div className="date-card-footer">
-                  <button className="btn-reserve">Reservar →</button>
+                  {isAvailable ? (
+                    <button className="btn-reserve">Reservar →</button>
+                  ) : (
+                    <div className="reserved-info">
+                      <div className="reserved-name">
+                        {reservation.nombre} {reservation.apellidos}
+                      </div>
+                      <div className="reserved-location">
+                        Portal {reservation.portal} · {reservation.piso}{reservation.letra}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
-
-      {/* Upcoming Reservations Section */}
-      {upcomingReservations.length > 0 && (
-        <div className="calendar-section">
-          <div className="section-header reserved-header">
-            <h3>🔒 Próximas Reservas ({upcomingReservations.length})</h3>
-            <p className="section-subtitle">Fechas ya reservadas</p>
-          </div>
-
-          <div className="reservations-list">
-            {upcomingReservations.map((reservation) => (
-              <div key={reservation.id} className="reservation-card">
-                <div className="reservation-date-block">
-                  <div className="res-day-number">
-                    {new Date(reservation.fecha + 'T12:00:00').getDate()}
-                  </div>
-                  <div className="res-month">
-                    {new Date(reservation.fecha + 'T12:00:00').toLocaleDateString('es-ES', { month: 'short' })}
-                  </div>
-                </div>
-                <div className="reservation-details">
-                  <div className="res-day-name">{getDayName(reservation.fecha)}</div>
-                  <div className="res-full-date">{getFormattedDate(reservation.fecha)}</div>
-                  <div className="res-user">
-                    <strong>{reservation.nombre} {reservation.apellidos}</strong>
-                    <span className="res-location">Portal {reservation.portal} · {reservation.piso}{reservation.letra}</span>
-                  </div>
-                  {reservation.motivo && (
-                    <div className="res-motivo">"{reservation.motivo}"</div>
-                  )}
-                </div>
-                <div className="status-badge reserved">Reservado</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
