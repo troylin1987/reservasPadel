@@ -13,6 +13,10 @@ import LocalPage from './pages/LocalPage';
 import CancelReservation from './components/CancelReservation';
 import './App.css';
 
+import headerHome from './assets/header-home.jpg';
+import headerPadel from './assets/header-padel.jpg';
+import headerLocal from './assets/header-local.jpg';
+
 function AppLayout() {
   const location = useLocation();
 
@@ -22,9 +26,18 @@ function AppLayout() {
     return 'parallax-hero home-hero';
   };
 
+  const getHeroBackground = () => {
+    if (location.pathname.startsWith('/padel')) return headerPadel;
+    if (location.pathname.startsWith('/local')) return headerLocal;
+    return headerHome;
+  };
+
   return (
     <div className="App">
-      <div className={getHeroClass()}>
+      <div
+        className={getHeroClass()}
+        style={{ backgroundImage: `url(${getHeroBackground()})` }}
+      >
         <header className="app-header">
           <div className="header-content">
             <h1 className="app-title">

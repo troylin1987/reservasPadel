@@ -78,21 +78,6 @@ body {
   will-change: transform;
 }
 
-/* Imagen por defecto (Inicio) */
-.home-hero::before {
-  background-image: url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=80&w=2000');
-}
-
-/* Imagen sección Pádel */
-.padel-hero::before {
-  background-image: url('https://images.unsplash.com/photo-1519861155730-0b5fbf0dd889?q=80&w=2000');
-}
-
-/* Imagen sección Local Comunitario */
-.local-hero::before {
-  background-image: url('https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=2000');
-}
-
 .parallax-hero::after {
   content: '';
   position: absolute;
