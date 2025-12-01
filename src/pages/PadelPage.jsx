@@ -58,19 +58,6 @@ const PadelPage = () => {
         </div>
       </div>
 
-      {/* Info Section */}
-      <div className="padel-info">
-        <div className="info-box">
-          <strong>ℹ️ Información importante:</strong>
-          <ul>
-            <li><strong>Toca o haz clic</strong> en cualquier espacio libre para reservar</li>
-            <li>Recuerda que <strong>no puedes reservar en días consecutivos</strong></li>
-            <li>No olvides <strong>apagar las luces y cerrar el cuadro al terminar</strong></li>
-            <li>Conservar las instalaciones es <strong>responsabilidad de todos</strong></li>
-          </ul>
-        </div>
-      </div>
-
       <Calendar onSelectSlot={handleSelectSlot} />
 
       {showForm && (

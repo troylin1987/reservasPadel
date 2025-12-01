@@ -98,18 +98,6 @@ const Calendar = ({ onSelectDate }) => {
 
   return (
     <div className="local-calendar-list">
-      {/* Info Section */}
-      <div className="calendar-info">
-        <div className="info-box">
-          <strong>ℹ️ Información importante:</strong>
-          <ul>
-            <li>Cada vivienda solo puede hacer <strong>una reserva al mes</strong></li>
-            <li>Las reservas solo pueden hacerse con un <strong>máximo de 30 días de antelación</strong></li>
-            <li>No se puede <strong>reservar en el mismo día</strong></li>
-            <li>El horario del local es de <strong>10:00 a 22:00</strong></li>
-          </ul>
-        </div>
-      </div>
 
       {/* Available Dates Section */}
       <div className="calendar-section">
