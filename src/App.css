@@ -70,14 +70,27 @@ body {
   left: 0;
   right: 0;
   bottom: -50px;
-  background-image: url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=2070');
-  background-attachment: fixed;
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
   filter: brightness(0.4) contrast(1.1);
   z-index: 0;
   will-change: transform;
+}
+
+/* Imagen por defecto (Inicio) */
+.home-hero::before {
+  background-image: url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=80&w=2000');
+}
+
+/* Imagen sección Pádel */
+.padel-hero::before {
+  background-image: url('https://images.unsplash.com/photo-1519861155730-0b5fbf0dd889?q=80&w=2000');
+}
+
+/* Imagen sección Local Comunitario */
+.local-hero::before {
+  background-image: url('https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=2000');
 }
 
 .parallax-hero::after {
@@ -134,6 +147,33 @@ body {
   gap: 0;
   border-left: 2px solid var(--border-subtle);
   flex-wrap: wrap;
+}
+
+.app-header nav .nav-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 0.875rem;
+  padding: 0.75rem 1.5rem;
+  border-right: 1px solid var(--border-subtle);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
+  background: var(--secondary-bg);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.app-header nav .nav-link:hover {
+  background: var(--surface-bg);
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+
+.app-header nav .nav-link.active {
+  background: var(--surface-bg);
+  border-bottom-color: var(--accent);
+  color: var(--accent);
 }
 
 .app-header nav a {

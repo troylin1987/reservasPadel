@@ -30,7 +30,12 @@ const PadelPage = () => {
     return (
       <div>
         <div className="page-header">
-          <button onClick={() => setShowNormativa(false)} className="btn-back">← Volver al calendario</button>
+          <button
+            onClick={() => setShowNormativa(false)}
+            className="btn-back"
+          >
+            ← Volver al calendario
+          </button>
         </div>
         <Normativa />
       </div>
@@ -41,7 +46,12 @@ const PadelPage = () => {
     return (
       <div>
         <div className="page-header">
-          <button onClick={() => setShowHistorico(false)} className="btn-back">← Volver al calendario</button>
+          <button
+            onClick={() => setShowHistorico(false)}
+            className="btn-back"
+          >
+            ← Volver al calendario
+          </button>
         </div>
         <Historico />
       </div>
@@ -53,8 +63,18 @@ const PadelPage = () => {
       <div className="page-header">
         <h1>Reservas de Pádel</h1>
         <div className="header-buttons">
-          <button onClick={() => setShowHistorico(true)} className="btn-normativa">Ver Histórico</button>
-          <button onClick={() => setShowNormativa(true)} className="btn-normativa">Ver Normativa</button>
+          <button
+            onClick={() => setShowHistorico(true)}
+            className="btn-normativa"
+          >
+            Ver Histórico
+          </button>
+          <button
+            onClick={() => setShowNormativa(true)}
+            className="btn-normativa"
+          >
+            Ver Normativa
+          </button>
         </div>
       </div>
 
